@@ -83,13 +83,19 @@ client.on("message", async (message) => {
       return;
     }
     if (args[0] === "-list") {
-      message.channel.send(
-        `${"```"}${jobs
-          .map((job) => {
-            return job + "\t\t";
-          })
-          .join("")}${"```"}`
-      );
+      message.channel
+        .send(
+          `${"```"}${jobs
+            .map((job) => {
+              return job + "\t\t";
+            })
+            .join("")}${"```"}`
+        )
+        .then((msg) => {
+          setTimeout(() => {
+            msg.delete();
+          }, 5000);
+        });
       message.delete();
       return;
     }
@@ -106,7 +112,11 @@ client.on("message", async (message) => {
 
       await Users.delete(idUser);
 
-      message.channel.send(`${args[1]} n'as plus de métiers`);
+      message.channel.send(`${args[1]} n'as plus de métiers`).then((msg) => {
+        setTimeout(() => {
+          msg.delete();
+        }, 5000);
+      });
       message.delete();
       return;
     }
@@ -246,7 +256,7 @@ client.on("message", async (message) => {
       .then((msg) => {
         setTimeout(() => {
           msg.delete();
-        }, 10000);
+        }, 60000);
       });
     message.delete();
   }
