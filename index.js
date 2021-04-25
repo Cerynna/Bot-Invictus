@@ -100,18 +100,10 @@ client.on("message", async (message) => {
       return;
     }
     if (args[0] === "-delete") {
-      if (!message.member.hasPermission("ADMINISTRATOR")) {
-        // message.channel.send(`Tu n'es pas Admin`);
-        return;
-      }
-      if (!args[1].match(/\d+/)) {
-        // message.channel.send(`Pas d'user`);
-        return;
-      }
+      if (!message.member.hasPermission("ADMINISTRATOR")) return;
+      if (!args[1].match(/\d+/)) return;
       const idUser = args[1].match(/\d+/)[0];
-
       await Users.delete(idUser);
-
       message.channel.send(`${args[1]} n'as plus de métiers`).then((msg) => {
         setTimeout(() => {
           msg.delete();
@@ -202,9 +194,6 @@ client.on("message", async (message) => {
     }
 
     const idUser = args[0].match(/\d+/)[0];
-    // const memberPermissions = message.member.hasPermission('ADMINISTRATOR');
-    // if()
-    // console.log(memberPermissions);
     if (!message.member.hasPermission("ADMINISTRATOR")) return;
 
     let user = await Users.get(idUser);
@@ -259,6 +248,7 @@ client.on("message", async (message) => {
         }, 60000);
       });
     message.delete();
+    return;
   }
 
   //   console.log(message);
