@@ -5,7 +5,7 @@
 1. Create config.json
 ```json
 {
-  		"BOT_TOKEN": "YOURTOKEN"
+"BOT_TOKEN": "YOURTOKEN"
 }
 ```
 2. Install node_module `npm install`
