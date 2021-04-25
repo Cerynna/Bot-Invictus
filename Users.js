@@ -30,12 +30,16 @@ const User = {
       return JSON.parse(user.value).value;
     });
     // console.log(users);
-    return users
-      .map((user) => {
-        if (user[job]) return { name: user.name, lvl: user[job] };
-        //   console.log(user[job]);
-      })
-      .filter((x) => x);
+    return lodash.orderBy(
+      users
+        .map((user) => {
+          if (user[job]) return { name: user.name, lvl: user[job] };
+          //   console.log(user[job]);
+        })
+        .filter((x) => x),
+      ["lvl"],
+      ["desc"]
+    );
     // console.log(jobers);
     // console.log(lodash.groupBy(users));
   },

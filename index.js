@@ -59,30 +59,33 @@ client.on("message", async (message) => {
       let fields = await Promise.all(
         jobs.map(async (tag) => {
           let jober = await Users.findJob(tag.toLocaleLowerCase());
-
-          return {
-            name: `${tag}`,
-            value:
-              jober
-                .map((user) => {
-                  return `${user.name} : ${user.lvl}`;
-                })
-                .join("\n") + "\n\u200b",
-            inline: true,
-          };
+          if (jober.length > 0) {
+            return {
+              name: `${tag}`,
+              value:
+                jober
+                  .map((user) => {
+                    return `${user.name} : ${user.lvl}`;
+                  })
+                  .join("\n") + "\n\u200b",
+              inline: true,
+            };
+          }
+          return false;
         })
       );
+
       const embed = new Discord.MessageEmbed()
         .setColor("#fbff00")
         .setTitle(`Liste de tout les metiers`)
-        .addFields(fields)
+        .addFields(fields.filter((x) => x))
         .setTimestamp();
 
       message.reply(embed);
       message.delete();
       return;
     }
-    if (args[0] === "-list") {
+    if (args[0] === "-all") {
       message.channel
         .send(
           `${"```"}${jobs
@@ -99,12 +102,46 @@ client.on("message", async (message) => {
       message.delete();
       return;
     }
-    if (args[0] === "-delete") {
-      if (!message.member.hasPermission("ADMINISTRATOR")) return;
-      if (!args[1].match(/\d+/)) return;
-      const idUser = args[1].match(/\d+/)[0];
-      await Users.delete(idUser);
-      message.channel.send(`${args[1]} n'as plus de métiers`).then((msg) => {
+    if (args[0] === "-list") {
+      if (args[1]) {
+        if (
+          !jobs
+            .map((x) => x.toLocaleLowerCase())
+            .includes(args[1].toLocaleLowerCase())
+        ) {
+          message.channel
+            .send(`HUUUMMM **${args[1]}** n'ai pas un metier connu !!!`)
+            .then((msg) => {
+              setTimeout(() => {
+                msg.delete();
+              }, 5000);
+            });
+          message.delete();
+          return;
+        }
+        let jober = await Users.findJob(args[1].toLocaleLowerCase());
+        if (jober.length > 0) {
+          message.channel.send(
+            `**Liste de tout les ${args[1]}**\n${jober
+              .map((user) => {
+                return `${user.name} : ${user.lvl}`;
+              })
+              .join("\n")}`
+          );
+          message.delete();
+
+          return;
+        }
+        message.channel.send(`**Il n'y a pas de ${args[1]}**`).then((msg) => {
+          setTimeout(() => {
+            msg.delete();
+          }, 5000);
+        });
+        message.delete();
+
+        return;
+      }
+      message.channel.send(`Il faut spécifier un **métier**`).then((msg) => {
         setTimeout(() => {
           msg.delete();
         }, 5000);
@@ -112,6 +149,52 @@ client.on("message", async (message) => {
       message.delete();
       return;
     }
+    if (args[0] === "-delete") {
+      if (!message.member.hasPermission("ADMINISTRATOR")) return;
+      if (!args[1].match(/\d+/)) return;
+      const idUser = args[1].match(/\d+/)[0];
+      await Users.delete(idUser);
+      message.channel
+        .send(`**${args[1]}** n'as plus de métiers`)
+        .then((msg) => {
+          setTimeout(() => {
+            msg.delete();
+          }, 5000);
+        });
+      message.delete();
+      return;
+    }
+    if (args[0] === "-user") {
+      if (args[1].match(/\d+/)) {
+        const idUser = args[1].match(/\d+/)[0];
+        let user = await Users.get(idUser);
+        delete user.name;
+        // console.log(user);
+
+        message.channel.send(
+          `Liste des métiers de **${
+            message.guild.members.cache.get(idUser).user.username
+          }**.\n${Object.keys(user)
+            .map((job) => {
+              return `${job} : ${user[job]}`;
+            })
+            .join("\n")}`
+        );
+        message.delete();
+
+        return;
+      }
+      message.channel
+        .send(`**${args[1]}** n'est pas enregistré.`)
+        .then((msg) => {
+          setTimeout(() => {
+            msg.delete();
+          }, 5000);
+        });
+      message.delete();
+      return;
+    }
+
     if (!args[0].match(/\d+/)) {
       if (
         !jobs
@@ -233,7 +316,11 @@ client.on("message", async (message) => {
         "\n" +
           `${"`"}&job${"`"} : Renvoi tout les metiers du bot.` +
           "\n" +
-          `${"`"}&job -list${"`"} : Liste des metiers possible.` +
+          `${"`"}&job -all${"`"} : Liste des metiers possible.` +
+          "\n" +
+          `${"`"}&job -user <@user>${"`"} : Liste des metier d'un user spécifique.` +
+          "\n" +
+          `${"`"}&job -list <metier>${"`"} : Liste des joueurs avec un metier spécifique.` +
           "\n" +
           `${"`"}&job -delete <@user>${"`"} : Suprimme les metiers d'un joueurs. (Admin)` +
           "\n" +
