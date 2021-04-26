@@ -111,7 +111,10 @@ const Troll = [
   },
   { type: "text", msg: "bla bla bli blo blu" },
   { type: "text", msg: "Tu as eu peur que ca recommence :P" },
-  { type: "text", msg: "Au faite pour les Kamas c'est mort je joue pas a Dofus :P" },
+  {
+    type: "text",
+    msg: "Au faite pour les Kamas c'est mort je joue pas a Dofus :P",
+  },
 ];
 
 const prefix = "&";
@@ -347,9 +350,13 @@ client.on("message", async (message) => {
       return;
     }
 
-    if (!jobs.map((x) => x.toLocaleLowerCase()).includes(args[1])) {
+    if (
+      !jobs
+        .map((x) => x.toLocaleLowerCase())
+        .includes(args[1].toLocaleLowerCase())
+    ) {
       message
-        .reply(`HUUUMMM ${args[1]} n'ai pas un metier connu`)
+        .reply(`HUUUMMM ${args[1]} n'ai pas un metier connu LOL`)
         .then((msg) => {
           setTimeout(() => {
             msg.delete();
