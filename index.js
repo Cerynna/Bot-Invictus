@@ -131,7 +131,7 @@ client.on("message", async (message) => {
   const args = commandBody.split(" ");
   const command = args.shift().toLowerCase();
 
-  if (command == "troollaraj") {
+  if (command == "secret") {
     trolling(message);
   }
 
