@@ -264,8 +264,6 @@ client.on("message", async (message) => {
         const idUser = args[1].match(/\d+/)[0];
         let user = await Users.get(idUser);
         delete user.name;
-        // console.log(user);
-
         message.channel.send(
           `Liste des métiers de **${
             message.guild.members.cache.get(idUser).user.username
@@ -319,7 +317,7 @@ client.on("message", async (message) => {
       }
 
       let user = await Users.get(message.author.id);
-      if (!user) {
+      if (!user && args[1] > 0) {
         let job = {
           name: message.author.username,
         };
@@ -335,7 +333,12 @@ client.on("message", async (message) => {
         message.delete();
         return;
       }
-      user[args[0].toLocaleLowerCase()] = args[1];
+
+      if (args[1] == 0) {
+        delete user[args[0].toLocaleLowerCase()];
+      } else {
+        user[args[0].toLocaleLowerCase()] = args[1];
+      }
 
       await Users.set(message.author.id, user);
 
@@ -379,7 +382,7 @@ client.on("message", async (message) => {
     if (!message.member.hasPermission("ADMINISTRATOR")) return;
 
     let user = await Users.get(idUser);
-    if (!user) {
+    if (!user && args[2] > 0) {
       let job = {
         name: message.guild.members.cache.get(idUser).user.username,
       };
@@ -394,7 +397,11 @@ client.on("message", async (message) => {
         });
       return;
     }
-    user[args[1].toLocaleLowerCase()] = args[2];
+    if (args[2] == 0) {
+      delete user[args[1].toLocaleLowerCase()];
+    } else {
+      user[args[1].toLocaleLowerCase()] = args[2];
+    }
 
     await Users.set(idUser, user);
 
@@ -417,7 +424,7 @@ client.on("message", async (message) => {
           "\n" +
           `${"`"}&job -all${"`"} : Liste des metiers possible.` +
           "\n" +
-          `${"`"}&job <metier> <lvl>${"`"} : Set le niveau d'un metier pour toi.` +
+          `${"`"}&job <metier> <lvl>${"`"} : Set le niveau d'un metier pour toi. (Si le lvl est a 0 ca supprime le metier)` +
           "\n" +
           `${"`"}&job -user <@user>${"`"} : Liste des metier d'un user spécifique.` +
           "\n" +
@@ -425,7 +432,7 @@ client.on("message", async (message) => {
           "\n" +
           `${"`"}&job -delete <@user>${"`"} : Suprimme les metiers d'un joueurs. (Admin)` +
           "\n" +
-          `${"`"}&job <@user> <metier> <lvl>${"`"} : Set le niveau d'un metier pour l'user mentionné. (Admin)` +
+          `${"`"}&job <@user> <metier> <lvl>${"`"} : Set le niveau d'un metier pour l'user mentionné. (Si le lvl est a 0 ca supprime le metier) (Admin)` +
           "\n" +
           `J'offre 10k Kamas a celui qui trouve la commande secrete`
       )
