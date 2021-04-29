@@ -1,10 +1,15 @@
 const Discord = require("discord.js");
 // const config = require("./config.json");
 const client = new Discord.Client();
+
 const dotenv = require("dotenv");
 dotenv.config();
 
 const Users = require("./Users");
+const Guilds = require("./Guilds");
+const Trolling = require("./Trolling");
+const Help = require("./Help");
+const RunTime = require("./RunTime");
 const jobs = [
   "Alchimiste",
   "Bijoutier",
@@ -27,100 +32,11 @@ const jobs = [
   "Tailleur",
 ];
 
-const Troll = [
-  { type: "text", msg: "**BRAVO TU AS TROUVER LA COMMANDE SECRETE !!!!**" },
-  { type: "text", msg: "Imagine cette commande en faite c'est juste du troll" },
-  {
-    type: "link",
-    msg:
-      "https://www.getdigital.fr/web/getdigital/gfx/products/__generated__resized/1100x1100/Aufkleber_Trollface.jpg",
-  },
-  {
-    type: "text",
-    msg:
-      "Et maintenant imagine je te flood comme ca pendant 24h ou 1000 messages",
-  },
-  { type: "link", msg: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-  { type: "text", msg: "Imagine plus c'est ce qui va se passé :D" },
-  {
-    type: "text",
-    msg: `Il est ${new Date().toLocaleTimeString(
-      "fr-FR"
-    )} c'est parti pour 24h ou 1000 messages.`,
-  },
-  { type: "text", msg: "Voila le premier message" },
-  { type: "text", msg: "Voila le deuxième message" },
-  { type: "text", msg: "Voila le troisième message" },
-  { type: "text", msg: "Voila le quatrième message" },
-  { type: "text", msg: "Voila le cinquième message" },
-  { type: "text", msg: "Voila le sixième message" },
-  { type: "text", msg: "Voila le septième message" },
-  { type: "text", msg: "Voila le huitième message" },
-  { type: "text", msg: "Voila le neuvième message" },
-  { type: "text", msg: "Voila le dixième message" },
-  {
-    type: "text",
-    msg:
-      'En vrai c\'est long :D donc maintenant ca sera que des "bla bla bli blo blu"',
-  },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "link", msg: "https://www.youtube.com/watch?v=sCNrK-n68CM" },
-  {
-    type: "text",
-    msg: "Tu peu la mettre deux fois au moins tu serra ou tu en es du troll",
-  },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "En vrai j'arrete ca doit etre chiant" },
-  { type: "text", msg: "Ou pas !!!!" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  {
-    type: "text",
-    msg:
-      "Ce que tu peu faire c'est supprimer ton compte discord si tu veu plus etre flood :P",
-  },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "bla bla bli blo blu" },
-  {
-    type: "text",
-    msg:
-      "Aller j'arrete mais pense a dire a un de tes potes de test la command et tape toi des barres",
-  },
-  { type: "text", msg: "bla bla bli blo blu" },
-  { type: "text", msg: "Tu as eu peur que ca recommence :P" },
-  {
-    type: "text",
-    msg: "Au faite pour les Kamas c'est mort je joue pas a Dofus :P",
-  },
-];
-
 const prefix = "&";
-client.on("ready", () => {
+client.on("ready", async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setActivity("&help pour m'invoquer");
+  await RunTime.run(client);
 });
 
 client.on("message", async (message) => {
@@ -130,52 +46,90 @@ client.on("message", async (message) => {
   const commandBody = message.content.slice(prefix.length);
   const args = commandBody.split(" ");
   const command = args.shift().toLowerCase();
-
+  if (command === "alarm") {
+    if (!message.member.hasPermission("ADMINISTRATOR")) return;
+    const idUser = args[0].match(/\d+/)[0];
+    let member = message.guild.members.cache.get(idUser);
+    // console.log(member);
+    let mesage = [
+      `Désolé du Flood c'est la faute de ${message.author}`,
+      "**Allo ???**",
+      "**Tu es la ???**",
+      `Ces message sont envoyer par ${message.author} depuis le serveur ${message.guild.name}`,
+    ];
+    // await Promise.all(
+    return mesage.map((msg) => {
+      return member.send(msg);
+    });
+    // );
+  }
+  if (command === "config") {
+    // console.log("CONFIG");
+    if (!message.member.hasPermission("ADMINISTRATOR")) return;
+    let guild = await Guilds.get(message.guild.id);
+    // console.log(guild);
+    if (!guild) {
+      Guilds.set(message.guild.id, {
+        owner: message.author.id,
+        update: Date.now(),
+        channel: false,
+        id: message.guild.id,
+      });
+      if (args.length === 0) {
+        Help.config(message);
+        return;
+      }
+    } else {
+      if (args.length === 0) {
+        Help.config(message);
+        return;
+      } else {
+        switch (args[0]) {
+          case "channel":
+            switch (args[1]) {
+              case "set":
+                message.channel
+                  .send("**Okay ce canal sera le canal du BOT**")
+                  .then((msg) => {
+                    setTimeout(() => {
+                      msg.delete();
+                    }, 5000);
+                  });
+                guild.channel = message.channel.id;
+                guild.update = Date.now();
+                Guilds.set(message.guild.id, guild);
+                return;
+              case "info":
+                Help.info(message, guild);
+                return;
+              default:
+                Help.config(message);
+                return;
+            }
+          default:
+            Help.config(message);
+            return;
+        }
+      }
+    }
+    //ICI
+    Help.config(message);
+    return;
+  }
   if (command == "secret") {
-    trolling(message);
+    return Trolling.run(message);
   }
 
   if (command === "clear") {
     if (message.member.hasPermission("ADMINISTRATOR")) {
-      await message.channel.messages.fetch().then(
-        function (list) {
-          message.channel.bulkDelete(list);
-        },
-        function (err) {
-          message.channel.send("ERROR: ERROR CLEARING CHANNEL.");
-        }
-      );
+      await Help.clear(message.channel);
 
       return;
     }
   }
   if (command === "job") {
     if (args.length === 0) {
-      let fields = await Promise.all(
-        jobs.map(async (tag) => {
-          let jober = await Users.findJob(tag.toLocaleLowerCase());
-          if (jober.length > 0) {
-            return {
-              name: `${tag}`,
-              value:
-                jober
-                  .map((user) => {
-                    return `${user.name} : ${user.lvl}`;
-                  })
-                  .join("\n") + "\n\u200b",
-              inline: true,
-            };
-          }
-          return false;
-        })
-      );
-
-      const embed = new Discord.MessageEmbed()
-        .setColor("#fbff00")
-        .setTitle(`Liste de tout les metiers`)
-        .addFields(fields.filter((x) => x))
-        .setTimestamp();
-
+      let embed = await Help.job();
       message.reply(embed);
       message.delete();
       return;
@@ -343,10 +297,12 @@ client.on("message", async (message) => {
       await Users.set(message.author.id, user);
 
       message.channel
-        .send(`${user.name} est maintenant ${args[0]} lvl : ${args[1]}`)
+        .send(
+          `${user.name} est maintenant ${args[0]} lvl : ${args[1]} (attend 5sec)`
+        )
         .then((msg) => {
-          setTimeout(() => {
-            msg.delete();
+          setTimeout(async () => {
+            await RunTime.messages(client);
           }, 5000);
         });
       message.delete();
@@ -419,22 +375,55 @@ client.on("message", async (message) => {
   if (command === "help") {
     message.channel
       .send(
-        "\n" +
-          `${"`"}&job${"`"} : Renvoi tout les metiers du bot.` +
+        `**Voici tout ce que peu faire le Bot**` +
+          "\n" +
+          "\n" +
+          `${"`"}&job${"`"} : Renvoi tout les metiers avec le niveau de tout les joueurs.` +
           "\n" +
           `${"`"}&job -all${"`"} : Liste des metiers possible.` +
           "\n" +
           `${"`"}&job <metier> <lvl>${"`"} : Set le niveau d'un metier pour toi. (Si le lvl est a 0 ca supprime le metier)` +
           "\n" +
-          `${"`"}&job -user <@user>${"`"} : Liste des metier d'un user spécifique.` +
+          `${"`"}&job -user <@user>${"`"} : Liste des metier d'un user spécifique. (N'oublie pas le @)` +
           "\n" +
           `${"`"}&job -list <metier>${"`"} : Liste des joueurs avec un metier spécifique.` +
           "\n" +
-          `${"`"}&job -delete <@user>${"`"} : Suprimme les metiers d'un joueurs. (Admin)` +
+          `${"`"}&helpadmin${"`"} : Si tu es Administrateur sinon ca te sert a rien :P (:star: **new** :star:)` +
           "\n" +
-          `${"`"}&job <@user> <metier> <lvl>${"`"} : Set le niveau d'un metier pour l'user mentionné. (Si le lvl est a 0 ca supprime le metier) (Admin)` +
+          `**J'offre 10k Kamas a celui qui trouve la commande secrete**`
+      )
+      .then((msg) => {
+        setTimeout(() => {
+          msg.delete();
+        }, 60000);
+      });
+    message.delete();
+    return;
+  }
+  if (command === "helpadmin") {
+    if (!message.member.hasPermission("ADMINISTRATOR")) {
+      message.channel
+        .send(`**Petit malin tu as pas les droits :D**`)
+        .then((msg) => {
+          setTimeout(() => {
+            msg.delete();
+          }, 10000);
+        });
+      message.delete();
+      return;
+    }
+    message.channel
+      .send(
+        `**Voici tout ce que peu faire le Bot quand tu ne fait pas parti du commun des Mortels**` +
           "\n" +
-          `J'offre 10k Kamas a celui qui trouve la commande secrete`
+          "\n" +
+          `${"`"}&config${"`"} : Configuré le bot pour une meilleur utilisation :D.` +
+          "\n" +
+          `${"`"}&clear${"`"} : Clear les messages du canal (attention il ne peu pas clear les message antérieur a 15 jours).` +
+          "\n" +
+          `${"`"}&job -delete <@user>${"`"} : Suprimme le joueur de la Bibliothèque.` +
+          "\n" +
+          `${"`"}&job <@user> <metier> <lvl>${"`"} : Set le niveau d'un metier pour l'user mentionné. (Si le lvl est a 0 ca supprime le metier)`
       )
       .then((msg) => {
         setTimeout(() => {
@@ -445,17 +434,5 @@ client.on("message", async (message) => {
     return;
   }
 });
-
-function trolling(message) {
-  let index = 1;
-  let interval;
-  message.author.send(Troll[0].msg);
-  interval = setInterval(() => {
-    if (!Troll[index]) return clearInterval(interval);
-    message.author.send(Troll[index].msg);
-    index++;
-  }, 2000);
-  message.delete();
-}
 
 client.login(process.env.BOT_TOKEN);

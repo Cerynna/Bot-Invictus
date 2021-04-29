@@ -32,9 +32,11 @@ const User = {
     return lodash.orderBy(
       users
         .map((user) => {
-          if (user[job]) return { name: user.name, lvl: user[job] };
+          if (user[job]) return { name: user.name, lvl: parseInt(user[job]) };
         })
-        .filter((x) => x),
+        .filter((x) => {
+          return x;
+        }),
       ["lvl"],
       ["desc"]
     );
