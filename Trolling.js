@@ -95,10 +95,10 @@ const Trolling = {
   run: (message) => {
     let index = 1;
     let interval;
-    message.author.send(Troll[0].msg);
+    message.author.send(this.Troll[0].msg);
     interval = setInterval(() => {
       if (!this.Troll[index]) return clearInterval(interval);
-      message.author.send(Troll[index].msg);
+      message.author.send(this.Troll[index].msg);
       index++;
     }, 2000);
     message.delete();
