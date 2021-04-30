@@ -10,6 +10,9 @@ const Guilds = require("./Guilds");
 const Trolling = require("./Trolling");
 const Help = require("./Help");
 const RunTime = require("./RunTime");
+const Job = require("./command/Job");
+const Quest = require("./command/Quest");
+
 const jobs = [
   "Alchimiste",
   "Bijoutier",
@@ -116,6 +119,9 @@ client.on("message", async (message) => {
     Help.config(message);
     return;
   }
+  if (command == "quete") {
+    return Quest.run(message, args);
+  }
   if (command == "secret") {
     return Trolling.run(message);
   }
@@ -129,73 +135,17 @@ client.on("message", async (message) => {
   }
   if (command === "job") {
     if (args.length === 0) {
-      let embed = await Help.job();
+      let embed = await Job.job();
       message.reply(embed);
       message.delete();
       return;
     }
     if (args[0] === "-all") {
-      message.channel
-        .send(
-          `${"```"}${jobs
-            .map((job) => {
-              return job + "\t\t";
-            })
-            .join("")}${"```"}`
-        )
-        .then((msg) => {
-          setTimeout(() => {
-            msg.delete();
-          }, 5000);
-        });
-      message.delete();
+      Job.all(message);
       return;
     }
     if (args[0] === "-list") {
-      if (args[1]) {
-        if (
-          !jobs
-            .map((x) => x.toLocaleLowerCase())
-            .includes(args[1].toLocaleLowerCase())
-        ) {
-          message.channel
-            .send(`HUUUMMM **${args[1]}** n'ai pas un metier connu !!!`)
-            .then((msg) => {
-              setTimeout(() => {
-                msg.delete();
-              }, 5000);
-            });
-          message.delete();
-          return;
-        }
-        let jober = await Users.findJob(args[1].toLocaleLowerCase());
-        if (jober.length > 0) {
-          message.channel.send(
-            `**Liste de tout les ${args[1]}**\n${jober
-              .map((user) => {
-                return `${user.name} : ${user.lvl}`;
-              })
-              .join("\n")}`
-          );
-          message.delete();
-
-          return;
-        }
-        message.channel.send(`**Il n'y a pas de ${args[1]}**`).then((msg) => {
-          setTimeout(() => {
-            msg.delete();
-          }, 5000);
-        });
-        message.delete();
-
-        return;
-      }
-      message.channel.send(`Il faut spécifier un **métier**`).then((msg) => {
-        setTimeout(() => {
-          msg.delete();
-        }, 5000);
-      });
-      message.delete();
+      await Job.list(message, args);
       return;
     }
     if (args[0] === "-delete") {
@@ -214,33 +164,10 @@ client.on("message", async (message) => {
       return;
     }
     if (args[0] === "-user") {
-      if (args[1].match(/\d+/)) {
-        const idUser = args[1].match(/\d+/)[0];
-        let user = await Users.get(idUser);
-        delete user.name;
-        message.channel.send(
-          `Liste des métiers de **${
-            message.guild.members.cache.get(idUser).user.username
-          }**.\n${Object.keys(user)
-            .map((job) => {
-              return `${job} : ${user[job]}`;
-            })
-            .join("\n")}`
-        );
-        message.delete();
-
-        return;
-      }
-      message.channel
-        .send(`**${args[1]}** n'est pas enregistré.`)
-        .then((msg) => {
-          setTimeout(() => {
-            msg.delete();
-          }, 5000);
-        });
-      message.delete();
-      return;
+      await Job.user(message, args);
     }
+
+    Job.default();
 
     if (!args[0].match(/\d+/)) {
       if (

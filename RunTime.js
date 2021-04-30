@@ -1,13 +1,14 @@
 const cron = require("node-cron");
 const Help = require("./Help");
 const Guilds = require("./Guilds");
+const Job = require("./command/Job");
 const RunTime = {
   messages: async (client) => {
     const guilds = await Guilds.all();
     guilds.forEach(async (guild) => {
       if (guild.channel) {
         let channel = client.channels.cache.get(guild.channel);
-        let embed = await Help.job();
+        let embed = await Job.job();
         if (!guild.message) {
           await Help.clear(channel, true);
           let message = await channel.send(embed);
