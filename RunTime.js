@@ -33,7 +33,7 @@ const RunTime = {
   },
   run: async (client) => {
     await RunTime.messages(client);
-    cron.schedule("* * * * *", async () => {
+    cron.schedule("*/10 * * * *", async () => {
       console.log("running a task every minute");
       await RunTime.messages(client);
     });
