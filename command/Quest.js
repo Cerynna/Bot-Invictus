@@ -7,7 +7,6 @@ const Quest = {
           args.join("+")
         )}`
     );
-    console.log();
   },
 };
 
