@@ -167,7 +167,7 @@ client.on("message", async (message) => {
       await Job.user(message, args);
     }
 
-    Job.default();
+    // Job.default();
 
     if (!args[0].match(/\d+/)) {
       if (
